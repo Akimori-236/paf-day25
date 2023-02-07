@@ -15,27 +15,32 @@ import sg.edu.nus.iss.workshop24.models.LineItem;
 import sg.edu.nus.iss.workshop24.models.Order;
 
 @Controller
-@RequestMapping(path="/cart")
+@RequestMapping(path = "/cart")
 public class CartController {
-    
+
     @PostMapping
     public String postCart(@RequestBody MultiValueMap<String, String> form,
-        Model model, HttpSession sess){
-            List<LineItem> lineItems = (List<LineItem>)sess.getAttribute("cart");
-            if(null == lineItems) {
-                lineItems = new LinkedList();
-                sess.setAttribute("cart", lineItems);
-            }
-
-            String item =form.getFirst("item");
-            Integer quantity =Integer.parseInt(form.getFirst("quantity"));
-            lineItems.add(new LineItem(item, quantity));
-            Order ord = new Order();
-            ord.setCustomerName(form.getFirst("name"));
-            ord.setLineItems(lineItems);
-
-            sess.setAttribute("checkoutCart", ord);
-            model.addAttribute("lineItems", lineItems);
-            return "cart";
+            Model model, HttpSession session) {
+        
+        // create new cart if cart not in sessionStorage
+        List<LineItem> itemList = (List<LineItem>) session.getAttribute("cart");
+        if (null == itemList) {
+            itemList = new LinkedList();
+            session.setAttribute("cart", itemList);
         }
+
+        // create line item from form data
+        String product = form.getFirst("product");
+        Float unitPrice = Float.parseFloat(form.getFirst("unitprice"));
+        Float discount = Float.parseFloat(form.getFirst("discount"));
+        Integer quantity = Integer.parseInt(form.getFirst("quantity"));
+        itemList.add(LineItem.create(product, unitPrice, discount, quantity));
+        Order order = new Order();
+        order.setCustomerName(form.getFirst("name"));
+        order.setitemList(itemList);
+
+        session.setAttribute("order", order);
+        model.addAttribute("itemList", itemList);
+        return "cart";
+    }
 }
