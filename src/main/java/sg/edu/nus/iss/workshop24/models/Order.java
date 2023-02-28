@@ -24,4 +24,8 @@ public class Order {
     public void addItem(LineItem i) {
         this.itemList.add(i);
     }
+
+    public List<LineItem> getLineItems() {
+        return null;
+    }
 }

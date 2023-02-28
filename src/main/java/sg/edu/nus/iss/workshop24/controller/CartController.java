@@ -21,7 +21,7 @@ public class CartController {
     @PostMapping
     public String postCart(@RequestBody MultiValueMap<String, String> form,
             Model model, HttpSession session) {
-        
+
         // create new cart if cart not in sessionStorage
         List<LineItem> itemList = (List<LineItem>) session.getAttribute("cart");
         if (null == itemList) {
@@ -37,7 +37,7 @@ public class CartController {
         itemList.add(LineItem.create(product, unitPrice, discount, quantity));
         Order order = new Order();
         order.setCustomerName(form.getFirst("name"));
-        order.setitemList(itemList);
+        order.setItemList(itemList);
 
         session.setAttribute("order", order);
         model.addAttribute("itemList", itemList);
